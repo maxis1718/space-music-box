@@ -43,11 +43,11 @@ class AudioSystem {
     // 音量包絡（淡入淡出效果）
     gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
     gainNode.gain.linearRampToValueAtTime(
-      0.1,
+      0.6,
       this.audioContext.currentTime + 0.05
     );
     gainNode.gain.exponentialRampToValueAtTime(
-      0.01,
+      0.03,
       this.audioContext.currentTime + duration
     );
 

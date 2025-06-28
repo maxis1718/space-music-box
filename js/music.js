@@ -9,30 +9,51 @@ class MusicSystem {
     this.noteFrequencies = {
       // 低8度 (,)
       "1,": 130.81, // Do (C3)
+      "1b,": 123.47, // Do♭ (B2)
       "2,": 146.83, // Re (D3)
+      "2b,": 138.59, // Re♭ (D♭3)
       "3,": 164.81, // Mi (E3)
+      "3b,": 155.56, // Mi♭ (E♭3)
       "4,": 174.61, // Fa (F3)
+      "4b,": 164.81, // Fa♭ (E3)
       "5,": 196.0, // So (G3)
+      "5b,": 185.0, // So♭ (G♭3)
       "6,": 220.0, // La (A3)
+      "6b,": 207.65, // La♭ (A♭3)
       "7,": 246.94, // Ti (B3)
+      "7b,": 233.08, // Ti♭ (B♭3)
 
       // 中8度 (正常)
       1: 261.63, // Do (C4)
+      "1b": 246.94, // Do♭ (B3)
       2: 293.66, // Re (D4)
+      "2b": 277.18, // Re♭ (D♭4)
       3: 329.63, // Mi (E4)
+      "3b": 311.13, // Mi♭ (E♭4)
       4: 349.23, // Fa (F4)
+      "4b": 329.63, // Fa♭ (E4)
       5: 392.0, // So (G4)
+      "5b": 369.99, // So♭ (G♭4)
       6: 440.0, // La (A4)
+      "6b": 415.3, // La♭ (A♭4)
       7: 493.88, // Ti (B4)
+      "7b": 466.16, // Ti♭ (B♭4)
 
       // 高8度 (.)
       "1.": 523.25, // Do (C5)
+      "1b.": 493.88, // Do♭ (B4)
       "2.": 587.33, // Re (D5)
+      "2b.": 554.37, // Re♭ (D♭5)
       "3.": 659.25, // Mi (E5)
+      "3b.": 622.25, // Mi♭ (E♭5)
       "4.": 698.46, // Fa (F5)
+      "4b.": 659.25, // Fa♭ (E5)
       "5.": 783.99, // So (G5)
+      "5b.": 739.99, // So♭ (G♭5)
       "6.": 880.0, // La (A5)
+      "6b.": 830.61, // La♭ (A♭5)
       "7.": 987.77, // Ti (B5)
+      "7b.": 932.33, // Ti♭ (B♭5)
 
       0: 0, // 休止符
     };
@@ -40,7 +61,7 @@ class MusicSystem {
     // 歌曲庫
     this.songs = {
       twinkle: {
-        name: "小星星",
+        name: "Twinkle Star",
         notes: "115566544332215544332554433211556654433221",
         noteArray: [], // 將在初始化時填充
         emoji: "⭐",
@@ -52,7 +73,7 @@ class MusicSystem {
         emoji: "🦈",
       },
       bee: {
-        name: "小蜜蜂",
+        name: "Little Bee",
         notes: "533422123455554442213553222223433334553342213551",
         noteArray: [], // 將在初始化時填充
         emoji: "🐝",
@@ -85,7 +106,7 @@ class MusicSystem {
     );
   }
 
-  // 解析音符字符串，支持跨8度表示
+  // 解析音符字符串，支持跨8度表示和降音符
   parseNotes(noteString) {
     const notes = [];
     let i = 0;
@@ -96,23 +117,29 @@ class MusicSystem {
         continue;
       }
 
-      // 檢查下一個字符是否為8度標記
       let note = char;
-      if (i + 1 < noteString.length) {
-        const nextChar = noteString[i + 1];
-        if (nextChar === "," || nextChar === ".") {
-          note = char + nextChar;
-          i += 2;
-        } else {
-          i++;
+      let nextIndex = i + 1;
+
+      // 檢查降音符標記 (b)
+      if (nextIndex < noteString.length && noteString[nextIndex] === "b") {
+        note += "b";
+        nextIndex++;
+      }
+
+      // 檢查8度標記 (, 或 .)
+      if (nextIndex < noteString.length) {
+        const octaveChar = noteString[nextIndex];
+        if (octaveChar === "," || octaveChar === ".") {
+          note += octaveChar;
+          nextIndex++;
         }
-      } else {
-        i++;
       }
 
       if (note !== " ") {
         notes.push(note);
       }
+
+      i = nextIndex;
     }
     return notes;
   }
@@ -216,6 +243,22 @@ class MusicSystem {
     };
   }
 
+  // 獲取當前音符的頻率
+  getCurrentNoteFrequency() {
+    const song = this.songs[this.currentSong];
+    let currentNote;
+
+    if (this.currentNoteIndex === 0) {
+      currentNote = song.noteArray[0] || null;
+    } else if (this.currentNoteIndex >= song.noteArray.length) {
+      return 0; // 歌曲已結束
+    } else {
+      currentNote = song.noteArray[this.currentNoteIndex - 1]; // 剛剛播放的音符
+    }
+
+    return currentNote ? this.noteFrequencies[currentNote] || 0 : 0;
+  }
+
   // 添加新歌曲
   addSong(key, songData) {
     this.songs[key] = {
@@ -259,10 +302,14 @@ class MusicSystem {
 class MusicVisualizer {
   constructor() {
     this.activeNotes = [];
+    this.lastNoteFrequency = null; // 追蹤前一個音符的頻率
   }
 
   // 添加音符視覺效果
-  addNoteEffect(x, y, note, canvas) {
+  addNoteEffect(x, y, note, canvas, frequency = null) {
+    // 計算移動方向
+    let moveDirection = this.calculateMoveDirection(frequency);
+
     const effect = {
       x: x,
       y: y,
@@ -273,15 +320,51 @@ class MusicVisualizer {
       color: this.getNoteColor(note),
       text: this.getNoteText(note),
       canvas: canvas,
+      moveDirection: moveDirection, // 新增移動方向
     };
 
     this.activeNotes.push(effect);
+
+    // 更新前一個音符的頻率
+    if (frequency && frequency > 0) {
+      this.lastNoteFrequency = frequency;
+    }
+  }
+
+  // 計算移動方向
+  calculateMoveDirection(currentFrequency) {
+    if (!currentFrequency || currentFrequency === 0) {
+      // 休止符，隨機左右移動
+      return {
+        x: (Math.random() - 0.5) * 3, // -1.5 到 1.5
+        y: 0,
+      };
+    }
+
+    if (!this.lastNoteFrequency) {
+      // 第一個音符，預設往上
+      return { x: 0, y: -2 };
+    }
+
+    if (currentFrequency > this.lastNoteFrequency) {
+      // 音比前一個高，往上
+      return { x: 0, y: -3 };
+    } else if (currentFrequency < this.lastNoteFrequency) {
+      // 音比前一個低，往下
+      return { x: 0, y: 2 };
+    } else {
+      // 音高一樣，左右移動
+      return {
+        x: (Math.random() - 0.5) * 4, // -2 到 2
+        y: 0,
+      };
+    }
   }
 
   // 根據音符獲取顏色
   getNoteColor(note) {
-    // 提取基本音符數字（忽略8度標記）
-    const baseNote = note.replace(/[,.]/g, "");
+    // 提取基本音符數字（忽略8度標記和降音符標記）
+    const baseNote = note.replace(/[,.b]/g, "");
     const colors = {
       1: "#ff6b6b", // Do - 紅色
       2: "#4ecdc4", // Re - 青色
@@ -294,6 +377,11 @@ class MusicVisualizer {
     };
 
     let color = colors[baseNote] || "#ffffff";
+
+    // 根據降音符調整色調（稍微偏暗）
+    if (note.includes("b")) {
+      color = this.adjustBrightness(color, 0.8);
+    }
 
     // 根據8度調整亮度
     if (note.includes(",")) {
@@ -325,7 +413,7 @@ class MusicVisualizer {
   // 根據音符獲取顯示文字
   getNoteText(note) {
     // 提取基本音符數字
-    const baseNote = note.replace(/[,.]/g, "");
+    const baseNote = note.replace(/[,.b]/g, "");
     const texts = {
       1: "Do",
       2: "Re",
@@ -338,6 +426,11 @@ class MusicVisualizer {
     };
 
     let text = texts[baseNote] || "♪";
+
+    // 添加降音符標記
+    if (note.includes("b")) {
+      text += "♭"; // 降音符標記
+    }
 
     // 添加8度標記
     if (note.includes(",")) {
@@ -352,7 +445,14 @@ class MusicVisualizer {
   // 更新音符效果
   update() {
     this.activeNotes.forEach((note) => {
-      note.y -= 2; // 向上飄動
+      // 使用音符的移動方向
+      if (note.moveDirection) {
+        note.x += note.moveDirection.x;
+        note.y += note.moveDirection.y;
+      } else {
+        // 向上飄動（舊邏輯，以防萬一）
+        note.y -= 2;
+      }
       note.life -= note.decay;
       note.size += 0.5;
     });
