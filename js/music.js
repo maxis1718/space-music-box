@@ -195,11 +195,23 @@ class MusicSystem {
   // 獲取當前歌曲資訊
   getCurrentSongInfo() {
     const song = this.songs[this.currentSong];
+    // 獲取剛剛播放的音符：
+    // - 如果 currentNoteIndex = 0，顯示準備播放的第0個音符
+    // - 如果 currentNoteIndex > 0，顯示剛剛播放的音符（前一個索引）
+    let displayNote;
+    if (this.currentNoteIndex === 0) {
+      displayNote = song.noteArray[0] || "開始"; // 準備播放第一個音符
+    } else if (this.currentNoteIndex >= song.noteArray.length) {
+      displayNote = "完成"; // 歌曲已結束
+    } else {
+      displayNote = song.noteArray[this.currentNoteIndex - 1]; // 剛剛播放的音符
+    }
+
     return {
       name: song.name,
       progress: this.currentNoteIndex,
       total: song.noteArray.length,
-      currentNote: song.noteArray[this.currentNoteIndex] || "完成",
+      currentNote: displayNote,
       emoji: song.emoji,
     };
   }

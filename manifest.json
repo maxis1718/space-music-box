@@ -1,7 +1,7 @@
 {
-  "name": "言言的遊樂場",
-  "short_name": "言言遊樂場",
-  "description": "為一歲寶寶設計的互動音樂遊戲",
+  "name": "星空音樂盒",
+  "short_name": "星空音樂盒",
+  "description": "為小朋友設計的太空主題互動音樂遊戲",
   "start_url": "./",
   "display": "fullscreen",
   "orientation": "any",
