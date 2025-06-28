@@ -284,43 +284,72 @@ class Explosion {
         this.decay = 0.015;
 
         // 生成爆炸粒子
-        const particleCount = 15 + Math.random() * 20;
+        const particleCount = 20 + Math.random() * 25;
         for (let i = 0; i < particleCount; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const speed = 3 + Math.random() * 15;
-            this.particles.push({
+            const speed = 4 + Math.random() * 18;
+
+            // 為每個粒子添加更多變化
+            const particle = {
                 x: x,
                 y: y,
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
-                size: 3 + Math.random() * 8,
+                size: 2 + Math.random() * 10,
                 life: 1.0,
-                decay: 0.02 + Math.random() * 0.02,
+                decay: 0.015 + Math.random() * 0.025,
                 color: this.getRandomColor(),
-            });
+                // 新增屬性
+                rotation: 0,
+                rotationSpeed: (Math.random() - 0.5) * 0.3,
+                pulsePhase: Math.random() * Math.PI * 2,
+                originalSize: 0,
+            };
+
+            particle.originalSize = particle.size;
+            this.particles.push(particle);
         }
     }
 
     getRandomColor() {
-        const colors = [
-            "#ff6b6b",
-            "#4ecdc4",
-            "#45b7d1",
-            "#96ceb4",
-            "#feca57",
-            "#ff9ff3",
+        // 增加更豐富的色彩選擇
+        const colorPalettes = [
+            // 火焰色系
+            ["#ff4757", "#ff6348", "#ff7675", "#fdcb6e", "#f39c12"],
+            // 電光色系
+            ["#00d2d3", "#01a3a4", "#2ed573", "#5f27cd", "#a55eea"],
+            // 彩虹色系
+            ["#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#feca57", "#ff9ff3"],
+            // 夢幻色系
+            ["#ff9ff3", "#f368e0", "#3742fa", "#2f3542", "#57606f"],
+            // 宇宙色系
+            ["#00d8ff", "#0984e3", "#6c5ce7", "#a29bfe", "#fd79a8"],
+            // 寶石色系
+            ["#e17055", "#00b894", "#00cec9", "#6c5ce7", "#fd79a8", "#fdcb6e"],
         ];
-        return colors[Math.floor(Math.random() * colors.length)];
+
+        // 隨機選擇一個色系
+        const palette =
+            colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
+        return palette[Math.floor(Math.random() * palette.length)];
     }
 
     update() {
         this.particles.forEach((particle) => {
             particle.x += particle.vx;
             particle.y += particle.vy;
-            particle.vx *= 0.95;
-            particle.vy *= 0.95;
-            particle.vy += 0.2; // 重力
+            particle.vx *= 0.96;
+            particle.vy *= 0.96;
+            particle.vy += 0.15; // 重力
             particle.life -= particle.decay;
+
+            // 新增動畫效果
+            particle.rotation += particle.rotationSpeed;
+            particle.pulsePhase += 0.2;
+
+            // 脈衝大小變化
+            const pulseFactor = 1 + Math.sin(particle.pulsePhase) * 0.3;
+            particle.size = particle.originalSize * pulseFactor * particle.life;
         });
 
         this.particles = this.particles.filter((p) => p.life > 0);
@@ -333,16 +362,72 @@ class Explosion {
         ctx.save();
 
         this.particles.forEach((particle) => {
-            ctx.globalAlpha = particle.life * this.life;
-            ctx.fillStyle = particle.color;
+            ctx.save();
+
+            // 設置透明度和顏色
+            const alpha = particle.life * this.life;
+            ctx.globalAlpha = alpha;
+
+            // 移動到粒子位置
+            ctx.translate(particle.x, particle.y);
+            ctx.rotate(particle.rotation);
+
+            // 創建漸變效果
+            const gradient = ctx.createRadialGradient(
+                0,
+                0,
+                0,
+                0,
+                0,
+                particle.size
+            );
+            gradient.addColorStop(0, particle.color);
+            gradient.addColorStop(0.7, particle.color + "80"); // 半透明
+            gradient.addColorStop(1, "transparent");
+
+            ctx.fillStyle = gradient;
             ctx.shadowColor = particle.color;
-            ctx.shadowBlur = 12;
-            ctx.beginPath();
-            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.shadowBlur = 15 + particle.size * 0.5;
+
+            // 繪製星形或圓形
+            if (Math.random() > 0.7) {
+                // 30% 機率繪製星形
+                this.drawStar(
+                    ctx,
+                    0,
+                    0,
+                    particle.size * 0.8,
+                    particle.size * 0.4,
+                    5
+                );
+            } else {
+                // 70% 機率繪製圓形
+                ctx.beginPath();
+                ctx.arc(0, 0, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
         });
 
         ctx.restore();
+    }
+
+    // 繪製星形的輔助函數
+    drawStar(ctx, cx, cy, outerRadius, innerRadius, points) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - outerRadius);
+
+        for (let i = 0; i < points * 2; i++) {
+            const radius = i % 2 === 0 ? outerRadius : innerRadius;
+            const angle = (i * Math.PI) / points;
+            const x = cx + Math.cos(angle - Math.PI / 2) * radius;
+            const y = cy + Math.sin(angle - Math.PI / 2) * radius;
+            ctx.lineTo(x, y);
+        }
+
+        ctx.closePath();
+        ctx.fill();
     }
 
     isDead() {
