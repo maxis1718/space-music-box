@@ -1,0 +1,11 @@
+{
+  "name": "言言的遊樂場",
+  "short_name": "言言遊樂場",
+  "description": "為一歲寶寶設計的互動音樂遊戲",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0a0a2e",
+  "theme_color": "#64ffda",
+  "scope": "./"
+} 

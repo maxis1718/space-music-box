@@ -1,0 +1,19 @@
+{
+  "name": "baby-game",
+  "version": "1.0.0",
+  "description": "🎮 為一歲寶寶設計的互動網頁遊戲",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": ["baby", "game", "interactive", "canvas", "web-audio"],
+  "author": "Tech Lead",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+} 

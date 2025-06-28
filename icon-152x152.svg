@@ -1,0 +1,40 @@
+<svg width="152" height="152" viewBox="0 0 152 152" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#0a0a2e;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#0a0a2e;stop-opacity:1" />
+            </linearGradient>
+            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#64ffda;stop-opacity:0.8" />
+                <stop offset="70%" style="stop-color:#64ffda;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#64ffda;stop-opacity:0" />
+            </radialGradient>
+        </defs>
+        
+        <!-- 背景 -->
+        <rect width="152" height="152" fill="url(#bg)" rx="15.200000000000001"/>
+        
+        <!-- 發光效果 -->
+        <circle cx="76" cy="76" r="60.800000000000004" fill="url(#glow)"/>
+        
+        <!-- 星星背景 -->
+        <circle cx="90.77277928648779" cy="74.69354168466113" r="1.6234389942891392" fill="#ffffff" opacity="0.6"/><circle cx="54.44299396949734" cy="89.40058871938871" r="2.4147995637904893" fill="#ffffff" opacity="0.6"/><circle cx="54.849133008407115" cy="107.40234751460842" r="1.8282192968786029" fill="#ffffff" opacity="0.6"/><circle cx="119.44928146996816" cy="149.23459679265045" r="2.514127243036888" fill="#ffffff" opacity="0.6"/><circle cx="130.44461508922416" cy="65.5489174048226" r="2.8076730544793445" fill="#ffffff" opacity="0.6"/><circle cx="29.894658952638935" cy="72.73875431244811" r="2.960910724619811" fill="#ffffff" opacity="0.6"/><circle cx="95.8038334462181" cy="39.44061747894541" r="1.2705137148439927" fill="#ffffff" opacity="0.6"/><circle cx="7.167625503876081" cy="82.51152915186323" r="1.137381694690332" fill="#ffffff" opacity="0.6"/>
+        
+        <!-- 主圖標 - 音符 -->
+        <g transform="translate(76, 76)">
+            <!-- 音符符頭 -->
+            <ellipse cx="0" cy="15.200000000000001" rx="12.16" ry="9.12" fill="#64ffda" transform="rotate(-20)"/>
+            <!-- 音符符桿 -->
+            <rect x="9.12" y="-22.8" width="3.04" height="38" fill="#64ffda"/>
+            <!-- 音符符尾 -->
+            <path d="M 12.16 -22.8 Q 22.8 -15.200000000000001 18.24 -7.6000000000000005" 
+                  stroke="#64ffda" stroke-width="2.28" fill="none"/>
+        </g>
+        
+        <!-- 小星星裝飾 -->
+        <g fill="#feca57" opacity="0.8">
+            <text x="30.400000000000002" y="45.6" font-family="Arial" font-size="15.200000000000001">⭐</text>
+            <text x="114" y="106.39999999999999" font-family="Arial" font-size="12.16">🎵</text>
+        </g>
+    </svg>

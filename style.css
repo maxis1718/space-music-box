@@ -1,0 +1,251 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Courier New", monospace;
+    background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #0a0a2e 100%);
+    color: #64ffda;
+    overflow: hidden;
+    height: 100vh;
+    position: relative;
+    /* PWA 全螢幕支持 */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 當從主畫面啟動時的全螢幕樣式 */
+html,
+body {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    touch-action: manipulation;
+}
+
+.game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#gameCanvas {
+    display: block;
+    background: transparent;
+    cursor: pointer;
+    touch-action: none; /* 防止移動端滾動 */
+    position: relative;
+    z-index: 0;
+}
+
+/* 舊的 instructions 樣式已被新樣式取代 */
+
+.instructions p {
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+/* 舊的響應式設計已被新樣式取代 */
+
+/* 護眼模式 - 柔和發光效果 */
+canvas {
+    filter: brightness(0.9) contrast(1.1);
+}
+
+/* 太空背景動畫 */
+.space-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* 星星動畫層 */
+.stars,
+.stars2,
+.stars3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.stars {
+    background-image: radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+        radial-gradient(
+            2px 2px at 40px 70px,
+            rgba(255, 255, 255, 0.8),
+            transparent
+        ),
+        radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+        radial-gradient(
+            1px 1px at 130px 80px,
+            rgba(255, 255, 255, 0.6),
+            transparent
+        ),
+        radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: sparkle 20s linear infinite;
+}
+
+.stars2 {
+    background-image: radial-gradient(
+            1px 1px at 40px 60px,
+            rgba(100, 255, 218, 0.8),
+            transparent
+        ),
+        radial-gradient(
+            1px 1px at 80px 20px,
+            rgba(130, 177, 255, 0.6),
+            transparent
+        ),
+        radial-gradient(
+            1px 1px at 120px 90px,
+            rgba(179, 136, 255, 0.7),
+            transparent
+        );
+    background-repeat: repeat;
+    background-size: 180px 120px;
+    animation: sparkle 15s linear infinite reverse;
+}
+
+.stars3 {
+    background-image: radial-gradient(
+            1px 1px at 60px 40px,
+            rgba(255, 138, 101, 0.5),
+            transparent
+        ),
+        radial-gradient(
+            1px 1px at 100px 70px,
+            rgba(129, 199, 132, 0.4),
+            transparent
+        );
+    background-repeat: repeat;
+    background-size: 220px 140px;
+    animation: sparkle 25s linear infinite;
+}
+
+@keyframes sparkle {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-100px);
+    }
+}
+
+/* 遊戲標題 */
+.game-title {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.main-title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #64ffda, #82b1ff, #b388ff);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(100, 255, 218, 0.3);
+    margin: 0;
+    animation: titleGlow 3s ease-in-out infinite alternate,
+        gradientShift 6s ease-in-out infinite;
+    letter-spacing: 2px;
+    text-align: center;
+    width: 100%;
+}
+
+/* subtitle 已刪除 */
+
+@keyframes titleGlow {
+    0% {
+        text-shadow: 0 0 30px rgba(100, 255, 218, 0.3);
+        transform: scale(1);
+    }
+    100% {
+        text-shadow: 0 0 50px rgba(100, 255, 218, 0.6);
+        transform: scale(1.02);
+    }
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* subtitleFloat 動畫已刪除 */
+
+/* 調整操作說明位置 */
+.instructions {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #64ffda;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+    pointer-events: none;
+    z-index: 10;
+    text-align: center;
+    animation: instructionPulse 2s ease-in-out infinite;
+}
+
+@keyframes instructionPulse {
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* 響應式設計更新 */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 2.5rem;
+    }
+
+    /* subtitle 樣式已刪除 */
+
+    .instructions {
+        font-size: 16px;
+        bottom: 20px;
+    }
+
+    .game-title {
+        top: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 2rem;
+        letter-spacing: 1px;
+    }
+
+    /* subtitle 樣式已刪除 */
+}
